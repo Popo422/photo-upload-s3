@@ -24,7 +24,7 @@ export class ApiStack extends Stack {
     const uploadResources = api.root.addResource("upload", optionsWithCors);
     // create a method where its get but its like this /spaces/{spaceId}
     // spacesResources.addResource("{spaceId}");
-
+    uploadResources.addMethod("OPTIONS")
     uploadResources.addMethod("GET", props.photoUploadLambdaIntegration);
     uploadResources.addMethod("POST", props.photoUploadLambdaIntegration);
   }

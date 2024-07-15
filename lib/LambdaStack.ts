@@ -28,7 +28,7 @@ export class LambdaStack extends Stack {
     photUploadLambda.addToRolePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
-        resources: [props.photoBucketArn!],
+        resources: [`${props.photoBucketArn}/*`],
         actions: ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
       })
     );
