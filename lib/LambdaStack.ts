@@ -7,18 +7,20 @@ import { join } from "path";
 
 interface LambdaStackProps extends StackProps {
   stageName?: string;
+  photoBucketArn?: string;
 }
 export class LambdaStack extends Stack {
   public readonly photoUploadLambdaIntegration: LambdaIntegration;
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props);
-
+ 
     const photUploadLambda = new NodejsFunction(this, "s3-file-upload", {
       runtime: Runtime.NODEJS_18_X,
       handler: "handler",
       entry: join(__dirname, "..", "services", "handler.ts"),
       environment: {
         STAGE: props.stageName!,
+        PHOTO_BUCKET_ARN: props.photoBucketArn!,
       },
     });
 

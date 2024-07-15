@@ -10,11 +10,11 @@ export class ApiStack extends Stack {
     super(scope, id, props);
     const api = new RestApi(this, "photoUpload");
     //declare a resource endpont eg: /spaces
-    const spacesResources = api.root.addResource("upload");
+    const uploadResources = api.root.addResource("upload");
 // create a method where its get but its like this /spaces/{spaceId}
     // spacesResources.addResource("{spaceId}");
     
-    spacesResources.addMethod("GET", props.photoUploadLambdaIntegration);
-    spacesResources.addMethod("POST", props.photoUploadLambdaIntegration);
+    uploadResources.addMethod("GET", props.photoUploadLambdaIntegration);
+    uploadResources.addMethod("POST", props.photoUploadLambdaIntegration);
   }
 }
