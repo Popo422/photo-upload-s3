@@ -21,9 +21,11 @@ async function handler(
     if (path === "/upload" && httpMethod === "POST" && body !== null) {
       // Handle upload logic
       const { name, image, contentType } = JSON.parse(body);
-
+      const arn = process.env.PHOTO_BUCKET_ARN;
+      const parts = arn ? arn.split(":") : [];
+      const bucketName = parts[parts.length - 1];
       const params = {
-        Bucket: process.env.PHOTO_BUCKET_ARN,
+        Bucket: bucketName,
         Key: `${uuidv4()}-${name}`,
         Body: Buffer.from(image, "base64"),
         ContentType: contentType,
