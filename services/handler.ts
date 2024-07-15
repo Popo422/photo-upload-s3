@@ -60,4 +60,4 @@ async function handler(
   }
 }
 
-export { handler }
+export { handler };
