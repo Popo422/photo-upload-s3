@@ -59,3 +59,5 @@ async function handler(
     return err;
   }
 }
+
+export { handler }
