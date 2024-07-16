@@ -5,6 +5,11 @@ const {
 } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require("uuid");
 import {
+  getSignedUrl,
+  S3RequestPresigner,
+} from "@aws-sdk/s3-request-presigner";
+
+import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
   Context,
@@ -31,7 +36,9 @@ async function handler(
         ContentType: contentType,
       };
       const command = new PutObjectCommand(params);
-      const result = await s3Client.send(command);
+      const signedUrl = getSignedUrl(s3Client, command, {
+        expiresIn: 7 * 24 * 60 * 60, // 7 days
+      })
       const response: APIGatewayProxyResult = {
         headers: {
           "Access-Control-Allow-Origin": "*", // Allow all origins
@@ -40,8 +47,8 @@ async function handler(
         },
         statusCode: 200,
         body: JSON.stringify({
-          url: `${bucketName}.s3.ap-northeast-1.amazonaws.com/${params.Key}`,
-          
+          url: signedUrl,
+          fileName: params.Key, 
         }),
       };
 
