@@ -33,8 +33,15 @@ async function handler(
       const command = new PutObjectCommand(params);
       const result = await s3Client.send(command);
       const response: APIGatewayProxyResult = {
+        headers: {
+          "Access-Control-Allow-Origin": "*", // Allow all origins
+          "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent",
+          "Access-Control-Allow-Methods": "OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD",
+        },
         statusCode: 200,
-        body: JSON.stringify(result),
+        body: JSON.stringify({
+          url: `https://s3.amazonaws.com/${bucketName}/${params.Key}`,
+        }),
       };
 
       return response;
@@ -54,6 +61,7 @@ async function handler(
     };
     return err;
   } catch (error: any) {
+    console.log(error);
     const err: APIGatewayProxyResult = {
       statusCode: 500,
       body: JSON.stringify(error.message),
