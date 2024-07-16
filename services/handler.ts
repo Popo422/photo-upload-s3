@@ -40,7 +40,8 @@ async function handler(
         },
         statusCode: 200,
         body: JSON.stringify({
-          url: `https://s3.amazonaws.com/${bucketName}/${params.Key}`,
+          url: `${bucketName}.s3.ap-northeast-1.amazonaws.com/${params.Key}`,
+          
         }),
       };
 
