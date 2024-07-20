@@ -56,9 +56,30 @@ async function handler(
       return response;
     } else if (path === "/upload" && httpMethod === "GET" && body !== null) {
       // Handle download logi
+      const { fileName } = JSON.parse(body);
+      const arn = process.env.PHOTO_BUCKET_ARN;
+      const parts = arn ? arn.split(":") : [];
+      const bucketName = parts[parts.length - 1];
+      const getCommand = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: fileName,
+      });
+      const signedUrl = await getSignedUrl(s3Client, getCommand, {
+        expiresIn: 7 * 24 * 60 * 60, // 7 days
+      });
+
       const response: APIGatewayProxyResult = {
+        headers: {
+          "Access-Control-Allow-Origin": "*", // Allow all origins
+          "Access-Control-Allow-Headers":
+            "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent",
+          "Access-Control-Allow-Methods":
+            "OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD",
+        },
         statusCode: 200,
-        body: "peep poop",
+        body: JSON.stringify({
+          url: signedUrl,
+        }),
       };
 
       return response;
