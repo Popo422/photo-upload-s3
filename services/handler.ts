@@ -19,7 +19,12 @@ async function handler(
   context: Context
 ): Promise<APIGatewayProxyResult> {
   try {
-    const { path, httpMethod, body }: APIGatewayProxyEvent = event;
+    const {
+      path,
+      httpMethod,
+      body,
+      queryStringParameters,
+    }: APIGatewayProxyEvent = event;
     if (path === "/upload" && httpMethod === "POST" && body !== null) {
       // Handle upload logic
       const { name, image, contentType } = JSON.parse(body);
@@ -54,9 +59,13 @@ async function handler(
       };
 
       return response;
-    } else if (path === "/upload" && httpMethod === "GET" && body !== null) {
+    } else if (
+      path === "/upload" &&
+      httpMethod === "GET" &&
+      queryStringParameters
+    ) {
       // Handle download logi
-      const { fileName } = JSON.parse(body);
+      const { fileName } = queryStringParameters;
       const arn = process.env.PHOTO_BUCKET_ARN;
       const parts = arn ? arn.split(":") : [];
       const bucketName = parts[parts.length - 1];
