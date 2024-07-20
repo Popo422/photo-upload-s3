@@ -4,10 +4,7 @@ const {
   PutObjectCommand,
 } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require("uuid");
-import {
-  getSignedUrl,
-  S3RequestPresigner,
-} from "@aws-sdk/s3-request-presigner";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 import {
   APIGatewayProxyEvent,
@@ -35,20 +32,24 @@ async function handler(
         Body: Buffer.from(image, "base64"),
         ContentType: contentType,
       };
-      const command = new PutObjectCommand(params);
-      const signedUrl = getSignedUrl(s3Client, command, {
+      const putCommand = new PutObjectCommand(params);
+      await s3Client.send(putCommand);
+      const getCommand = new GetObjectCommand(params);
+      const signedUrl = await getSignedUrl(s3Client, getCommand, {
         expiresIn: 7 * 24 * 60 * 60, // 7 days
-      })
+      });
       const response: APIGatewayProxyResult = {
         headers: {
           "Access-Control-Allow-Origin": "*", // Allow all origins
-          "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent",
-          "Access-Control-Allow-Methods": "OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD",
+          "Access-Control-Allow-Headers":
+            "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent",
+          "Access-Control-Allow-Methods":
+            "OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD",
         },
         statusCode: 200,
         body: JSON.stringify({
           url: signedUrl,
-          fileName: params.Key, 
+          fileName: params.Key,
         }),
       };
 
